@@ -124,6 +124,8 @@ function parseAllMovies(raw: any): ParsedMovie[] {
       if (item.seasons && typeof item.seasons === 'object' && Object.keys(item.seasons).length > 0) continue;
       // Skip 24h channel items
       if (item.grupo === 'DESENHOS 24H' || item.nome?.includes('[24h]') || item.grupo?.includes('24H')) continue;
+      // Skip entries whose title clearly identifies an episode (SxE / NxN)
+      if (looksLikeEpisodeEntry(item)) continue;
 
       const title = item.nome || item.titulo || item.title || item['{titulo}'] || '';
       if (!title) continue;
