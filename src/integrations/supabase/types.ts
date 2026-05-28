@@ -402,9 +402,7 @@ export type Database = {
       }
       marathons: {
         Row: {
-          backdrop_path: string | null
           created_at: string
-          description: string | null
           id: string
           is_active: boolean
           position: number
@@ -413,9 +411,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          backdrop_path?: string | null
           created_at?: string
-          description?: string | null
           id?: string
           is_active?: boolean
           position?: number
@@ -424,9 +420,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          backdrop_path?: string | null
           created_at?: string
-          description?: string | null
           id?: string
           is_active?: boolean
           position?: number
@@ -479,10 +473,27 @@ export type Database = {
       }
       movies_catalog: {
         Row: {
+          adult: boolean | null
+          available_at: string | null
+          backdrop_path: string | null
+          content_type: string | null
           created_at: string | null
           genres: string[] | null
+          has_stream: boolean
+          homepage: string | null
           id: string
+          imdb_id: string | null
+          original_language: string | null
+          original_title: string | null
+          overview: string | null
+          popularity: number | null
           poster_path: string | null
+          release_date: string | null
+          release_year: number | null
+          runtime: number | null
+          source: string | null
+          status: string | null
+          tagline: string | null
           title: string
           tmdb_id: number | null
           updated_at: string | null
@@ -490,10 +501,27 @@ export type Database = {
           vote_count: number | null
         }
         Insert: {
+          adult?: boolean | null
+          available_at?: string | null
+          backdrop_path?: string | null
+          content_type?: string | null
           created_at?: string | null
           genres?: string[] | null
+          has_stream?: boolean
+          homepage?: string | null
           id?: string
+          imdb_id?: string | null
+          original_language?: string | null
+          original_title?: string | null
+          overview?: string | null
+          popularity?: number | null
           poster_path?: string | null
+          release_date?: string | null
+          release_year?: number | null
+          runtime?: number | null
+          source?: string | null
+          status?: string | null
+          tagline?: string | null
           title: string
           tmdb_id?: number | null
           updated_at?: string | null
@@ -501,10 +529,27 @@ export type Database = {
           vote_count?: number | null
         }
         Update: {
+          adult?: boolean | null
+          available_at?: string | null
+          backdrop_path?: string | null
+          content_type?: string | null
           created_at?: string | null
           genres?: string[] | null
+          has_stream?: boolean
+          homepage?: string | null
           id?: string
+          imdb_id?: string | null
+          original_language?: string | null
+          original_title?: string | null
+          overview?: string | null
+          popularity?: number | null
           poster_path?: string | null
+          release_date?: string | null
+          release_year?: number | null
+          runtime?: number | null
+          source?: string | null
+          status?: string | null
+          tagline?: string | null
           title?: string
           tmdb_id?: number | null
           updated_at?: string | null
@@ -692,12 +737,70 @@ export type Database = {
         }
         Relationships: []
       }
+      release_calendar: {
+        Row: {
+          backdrop_url: string | null
+          content_type: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          episode_number: number | null
+          id: string
+          poster_url: string | null
+          release_date: string
+          season_number: number | null
+          title: string
+          tmdb_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          backdrop_url?: string | null
+          content_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          episode_number?: number | null
+          id?: string
+          poster_url?: string | null
+          release_date: string
+          season_number?: number | null
+          title: string
+          tmdb_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          backdrop_url?: string | null
+          content_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          episode_number?: number | null
+          id?: string
+          poster_url?: string | null
+          release_date?: string
+          season_number?: number | null
+          title?: string
+          tmdb_id?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       series_catalog: {
         Row: {
+          available_at: string | null
+          backdrop_path: string | null
+          content_type: string | null
           created_at: string | null
           genres: string[] | null
           id: string
+          imdb_id: string | null
+          original_language: string | null
+          original_title: string | null
+          overview: string | null
+          popularity: number | null
           poster_path: string | null
+          release_date: string | null
+          release_year: number | null
           title: string
           tmdb_id: number | null
           updated_at: string | null
@@ -705,10 +808,20 @@ export type Database = {
           vote_count: number | null
         }
         Insert: {
+          available_at?: string | null
+          backdrop_path?: string | null
+          content_type?: string | null
           created_at?: string | null
           genres?: string[] | null
           id?: string
+          imdb_id?: string | null
+          original_language?: string | null
+          original_title?: string | null
+          overview?: string | null
+          popularity?: number | null
           poster_path?: string | null
+          release_date?: string | null
+          release_year?: number | null
           title: string
           tmdb_id?: number | null
           updated_at?: string | null
@@ -716,10 +829,20 @@ export type Database = {
           vote_count?: number | null
         }
         Update: {
+          available_at?: string | null
+          backdrop_path?: string | null
+          content_type?: string | null
           created_at?: string | null
           genres?: string[] | null
           id?: string
+          imdb_id?: string | null
+          original_language?: string | null
+          original_title?: string | null
+          overview?: string | null
+          popularity?: number | null
           poster_path?: string | null
+          release_date?: string | null
+          release_year?: number | null
           title?: string
           tmdb_id?: number | null
           updated_at?: string | null
@@ -730,29 +853,41 @@ export type Database = {
       }
       series_episodes: {
         Row: {
+          air_date: string | null
           created_at: string | null
           episode_number: number
+          has_stream: boolean
           id: string
           season_number: number
           series_id: string
+          still_path: string | null
+          stream_count: number
           title: string
           updated_at: string | null
         }
         Insert: {
+          air_date?: string | null
           created_at?: string | null
           episode_number: number
+          has_stream?: boolean
           id?: string
           season_number: number
           series_id: string
+          still_path?: string | null
+          stream_count?: number
           title: string
           updated_at?: string | null
         }
         Update: {
+          air_date?: string | null
           created_at?: string | null
           episode_number?: number
+          has_stream?: boolean
           id?: string
           season_number?: number
           series_id?: string
+          still_path?: string | null
+          stream_count?: number
           title?: string
           updated_at?: string | null
         }
@@ -765,6 +900,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stream_check_cursor: {
+        Row: {
+          current_offset: number
+          table_name: string
+          total_rows: number
+          updated_at: string | null
+        }
+        Insert: {
+          current_offset?: number
+          table_name: string
+          total_rows?: number
+          updated_at?: string | null
+        }
+        Update: {
+          current_offset?: number
+          table_name?: string
+          total_rows?: number
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {
@@ -1003,9 +1159,34 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      items_without_streams: {
+        Row: {
+          edit_link: string | null
+          id: string | null
+          poster_path: string | null
+          status: string | null
+          title: string | null
+          type: string | null
+        }
+        Relationships: []
+      }
+      stream_status_view: {
+        Row: {
+          id: string | null
+          poster_path: string | null
+          status: string | null
+          title: string | null
+          type: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      advance_stream_check: {
+        Args: { p_limit?: number; p_table: string }
+        Returns: undefined
+      }
+      f_unaccent: { Args: { "": string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1013,6 +1194,76 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_movies_unaccent: {
+        Args: { lim?: number; q: string }
+        Returns: {
+          adult: boolean | null
+          available_at: string | null
+          backdrop_path: string | null
+          content_type: string | null
+          created_at: string | null
+          genres: string[] | null
+          has_stream: boolean
+          homepage: string | null
+          id: string
+          imdb_id: string | null
+          original_language: string | null
+          original_title: string | null
+          overview: string | null
+          popularity: number | null
+          poster_path: string | null
+          release_date: string | null
+          release_year: number | null
+          runtime: number | null
+          source: string | null
+          status: string | null
+          tagline: string | null
+          title: string
+          tmdb_id: number | null
+          updated_at: string | null
+          vote_average: number | null
+          vote_count: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "movies_catalog"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      search_series_unaccent: {
+        Args: { lim?: number; q: string }
+        Returns: {
+          available_at: string | null
+          backdrop_path: string | null
+          content_type: string | null
+          created_at: string | null
+          genres: string[] | null
+          id: string
+          imdb_id: string | null
+          original_language: string | null
+          original_title: string | null
+          overview: string | null
+          popularity: number | null
+          poster_path: string | null
+          release_date: string | null
+          release_year: number | null
+          title: string
+          tmdb_id: number | null
+          updated_at: string | null
+          vote_average: number | null
+          vote_count: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "series_catalog"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
+      unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
