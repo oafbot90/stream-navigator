@@ -489,10 +489,67 @@ function collectSeriesItems(raw: any, out: any[] = [], depth = 0): any[] {
   return out;
 }
 
+function parseFlatTituloStreamFormat(raw: any): ParsedSeries[] {
+  // Format: [{ titulo: "Series Name SxE - Episode Title | source", stream: "url", capturado: ... }, ...]
+  // Used for noveflix-style episode captures where each entry is one episode with a single stream URL.
+  if (!Array.isArray(raw) || raw.length === 0) return [];
+  const sample = raw[0];
+  if (!sample || typeof sample !== 'object') return [];
+  if (typeof sample.stream !== 'string') return [];
+  if (typeof sample.titulo !== 'string') return [];
+  if (sample.episodios || sample.seasons) return [];
+
+  // "Name 10x22 - Episode Title | source"  OR  "Name S10E22 - Episode Title"
+  const reA = /^(.+?)\s+(\d+)\s*[xX]\s*(\d+)\s*[-–—:]\s*(.+?)(?:\s*\|.*)?$/;
+  const reB = /^(.+?)\s+S(\d+)\s*E(\d+)\s*[-–—:]?\s*(.*?)(?:\s*\|.*)?$/i;
+
+  const groups = new Map<string, { nome: string; episodios: ParsedEpisode[]; seen: Set<string> }>();
+
+  for (const item of raw) {
+    if (!item?.titulo || !item?.stream) continue;
+    const url = String(item.stream).trim();
+    if (!url.startsWith('http')) continue;
+    const title = String(item.titulo).trim();
+    const m = title.match(reA) || title.match(reB);
+    if (!m) continue;
+    const seriesName = m[1].trim();
+    const season = parseInt(m[2]);
+    const episode = parseInt(m[3]);
+    const epTitle = (m[4] || '').trim() || `T${season}E${episode}`;
+    if (!seriesName || isNaN(season) || isNaN(episode)) continue;
+
+    const key = seriesName.toLowerCase();
+    if (!groups.has(key)) groups.set(key, { nome: seriesName, episodios: [], seen: new Set() });
+    const g = groups.get(key)!;
+    const dedup = `${season}x${episode}|${url}`;
+    if (g.seen.has(dedup)) continue;
+    g.seen.add(dedup);
+    g.episodios.push({
+      titulo: epTitle,
+      temporada: season,
+      episodio: episode,
+      url,
+      has_dub: false,
+      has_leg: false,
+      streams: [{ url, tipo: 'direct' }],
+    });
+  }
+
+  const out: ParsedSeries[] = [];
+  for (const { nome, episodios } of groups.values()) {
+    if (episodios.length > 0) out.push({ nome, tmdb_id: null, episodios });
+  }
+  return out;
+}
+
 function parseAllSeries(raw: any): ParsedSeries[] {
   const results: ParsedSeries[] = [];
   const seenTmdb = new Set<number>();
   const seenName = new Set<string>();
+
+  // ── Flat array of { titulo, stream } entries (noveflix-style episode captures) ──
+  const flatResults = parseFlatTituloStreamFormat(raw);
+  if (flatResults.length > 0) return flatResults;
 
   // ── Generic scan: pick up every series-shaped item (type:"tv" + seasons[]) at any depth ──
   const seriesItems = collectSeriesItems(raw);
