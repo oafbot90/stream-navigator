@@ -57,7 +57,21 @@ function extractTmdbIdFromUrl(url?: string): number | null {
   return null;
 }
 
+// Detecta título de episódio tipo "Nome 10x1 - ...", "Nome S01E05 ...", "Nome 1x05"
+const EPISODE_TITLE_RE = /\b(?:S\d{1,2}\s*E\d{1,3}|\d{1,2}\s*[xX]\s*\d{1,3})\b/;
+
+function looksLikeEpisodeEntry(item: any): boolean {
+  if (!item || typeof item !== 'object') return false;
+  const t = item.titulo || item.title || item.nome || '';
+  if (typeof t !== 'string') return false;
+  return EPISODE_TITLE_RE.test(t);
+}
+
 function parseAllMovies(raw: any): ParsedMovie[] {
+  // Se o JSON inteiro é um array de episódios flat (noveflix-style), não trate como filmes
+  if (Array.isArray(raw) && raw.length > 0 && raw.every(looksLikeEpisodeEntry) && typeof raw[0]?.stream === 'string') {
+    return [];
+  }
   const movies: ParsedMovie[] = [];
 
   // Collect candidate arrays from various formats
