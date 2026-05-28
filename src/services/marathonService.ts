@@ -71,7 +71,7 @@ export const getMarathons = async (): Promise<Marathon[]> => {
     .order('position', { ascending: true });
 
   if (error) throw error;
-  return await enrichMarathonsBackdrops(data || []);
+  return await enrichMarathonsBackdrops((data || []) as any);
 };
 
 export const getAllMarathons = async (): Promise<Marathon[]> => {
@@ -81,7 +81,7 @@ export const getAllMarathons = async (): Promise<Marathon[]> => {
     .order('position', { ascending: true });
 
   if (error) throw error;
-  return await enrichMarathonsBackdrops(data || []);
+  return await enrichMarathonsBackdrops((data || []) as any);
 };
 
 export const getMarathonDetails = async (id: string): Promise<Marathon> => {
@@ -92,7 +92,7 @@ export const getMarathonDetails = async (id: string): Promise<Marathon> => {
     .single();
 
   if (error) throw error;
-  return data;
+  return data as any;
 };
 
 export const getMarathonItems = async (marathonId: string): Promise<MarathonItem[]> => {
@@ -138,24 +138,24 @@ export const getMarathonItems = async (marathonId: string): Promise<MarathonItem
 export const createMarathon = async (marathon: Omit<Marathon, 'id'>): Promise<Marathon> => {
   const { data, error } = await supabase
     .from('marathons')
-    .insert(marathon)
+    .insert(marathon as any)
     .select()
     .single();
 
   if (error) throw error;
-  return data;
+  return data as any;
 };
 
 export const updateMarathon = async (id: string, updates: Partial<Marathon>): Promise<Marathon> => {
   const { data, error } = await supabase
     .from('marathons')
-    .update(updates)
+    .update(updates as any)
     .eq('id', id)
     .select()
     .single();
 
   if (error) throw error;
-  return data;
+  return data as any;
 };
 
 export const deleteMarathon = async (id: string): Promise<void> => {
