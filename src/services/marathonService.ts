@@ -71,7 +71,7 @@ export const getMarathons = async (): Promise<Marathon[]> => {
     .order('position', { ascending: true });
 
   if (error) throw error;
-  return await enrichMarathonsBackdrops(data || []);
+  return await enrichMarathonsBackdrops((data || []) as any);
 };
 
 export const getAllMarathons = async (): Promise<Marathon[]> => {
