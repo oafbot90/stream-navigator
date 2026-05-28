@@ -92,7 +92,7 @@ export const getMarathonDetails = async (id: string): Promise<Marathon> => {
     .single();
 
   if (error) throw error;
-  return data;
+  return data as any;
 };
 
 export const getMarathonItems = async (marathonId: string): Promise<MarathonItem[]> => {
