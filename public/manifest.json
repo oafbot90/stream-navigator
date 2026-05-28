@@ -1,0 +1,40 @@
+
+{
+  "name": "FlixHub - Stream Hub",
+  "short_name": "FlixHub",
+  "description": "Sua plataforma de streaming favorita",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1419",
+  "theme_color": "#e50914",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/flixhub-favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/flixhub-favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["entertainment", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "FlixHub Home Screen"
+    }
+  ],
+  "gcm_sender_id": "103953800507",
+  "permissions": [
+    "notifications"
+  ]
+}

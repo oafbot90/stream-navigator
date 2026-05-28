@@ -1,0 +1,16 @@
+project_id = "jzgpwkehhgpvdlqlkfiq"
+
+[functions.orionpay-create-pix]
+verify_jwt = true
+
+[functions.orionpay-check-status]
+verify_jwt = true
+
+[functions.tmdb-overview]
+verify_jwt = false
+
+[functions.get-stream]
+verify_jwt = false
+
+[functions.report-stream-status]
+verify_jwt = false

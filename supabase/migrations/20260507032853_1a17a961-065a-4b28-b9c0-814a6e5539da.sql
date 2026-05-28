@@ -1,0 +1,1 @@
+CREATE POLICY "Admins manage app_config" ON public.app_config FOR ALL TO authenticated USING (has_role(auth.uid(), 'admin'::app_role)) WITH CHECK (has_role(auth.uid(), 'admin'::app_role));

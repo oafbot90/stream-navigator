@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX IF NOT EXISTS idx_movie_streams_movie_url ON public.movie_streams (movie_id, url);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_episode_streams_episode_url ON public.episode_streams (episode_id, url);

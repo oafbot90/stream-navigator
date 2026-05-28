@@ -1,0 +1,77 @@
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/flixhub-favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Adcash Library: carregada dinamicamente apenas para usuários gratuitos via AdManager -->
+
+    <title>FlixHub - Sua Plataforma de Streaming</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="FlixHub - Sua plataforma de streaming favorita para filmes, séries e anime">
+    <meta name="theme-color" content="#e50914">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FlixHub">
+    
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" href="/flixhub-favicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/flixhub-favicon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/flixhub-favicon.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Preconnect for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script>
+      // Anti-devtools protection
+      (function(){
+        // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        document.addEventListener('keydown',function(e){
+          if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.ctrlKey&&e.key==='u')){
+            e.preventDefault();e.stopPropagation();return false;
+          }
+        });
+        // Block right-click only on non-touch devices
+        if(!('ontouchstart' in window)){
+          document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+        }
+      })();
+    </script>
+    <script>
+      // SPA fallback: restaura a rota salva pelo 404.html
+      (function () {
+        try {
+          var saved = sessionStorage.getItem('spa-redirect');
+          if (saved && saved !== '/') {
+            sessionStorage.removeItem('spa-redirect');
+            window.history.replaceState(null, '', saved);
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('ServiceWorker registration successful');
+            }, function(err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
