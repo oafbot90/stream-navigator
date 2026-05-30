@@ -80,8 +80,27 @@ const AdminEditSeries: React.FC = () => {
       const epIds = eps.map(e => e.id);
       let streamsMap: Record<string, { url: string; quality: string }> = {};
       if (epIds.length > 0) {
-        const { data: streams } = await supabase.from('episode_streams').select('*').in('episode_id', epIds);
-        (streams || []).forEach((s: any) => { if (!streamsMap[s.episode_id]) streamsMap[s.episode_id] = { url: s.url, quality: s.quality || 'HD' }; });
+        // Chunk the .in() query to avoid URL length limits AND paginate to bypass the 1000-row default cap.
+        const CHUNK = 100;
+        for (let i = 0; i < epIds.length; i += CHUNK) {
+          const chunk = epIds.slice(i, i + CHUNK);
+          let from = 0;
+          const PAGE = 1000;
+          // eslint-disable-next-line no-constant-condition
+          while (true) {
+            const { data: streams, error } = await supabase
+              .from('episode_streams')
+              .select('episode_id, url, quality')
+              .in('episode_id', chunk)
+              .range(from, from + PAGE - 1);
+            if (error) { console.error('episode_streams fetch error', error); break; }
+            (streams || []).forEach((s: any) => {
+              if (!streamsMap[s.episode_id]) streamsMap[s.episode_id] = { url: s.url, quality: s.quality || 'HD' };
+            });
+            if (!streams || streams.length < PAGE) break;
+            from += PAGE;
+          }
+        }
       }
       setEpisodes(eps.map((e: any) => ({
         id: e.id, season_number: e.season_number, episode_number: e.episode_number, title: e.title,
