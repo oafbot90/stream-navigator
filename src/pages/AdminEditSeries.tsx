@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, Save, Plus, Trash2, Loader2, Tv, Info } from 'lucide-react';
+import { ChevronLeft, Save, Plus, Trash2, Loader2, Tv, Info, CheckSquare } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { motion } from 'framer-motion';
 import { tmdbApi } from '@/services/tmdbApi';
 
