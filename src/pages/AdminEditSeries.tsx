@@ -269,6 +269,39 @@ const AdminEditSeries: React.FC = () => {
     }
   };
 
+  const bulkDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Excluir ${selectedIds.size} episódio(s) selecionado(s)?`)) return;
+    setBulkDeleting(true);
+    try {
+      const toDel = episodes.filter(e => selectedIds.has(e.id));
+      const persistedIds = toDel.filter(e => !e.isNew && !String(e.id).startsWith('new-')).map(e => e.id);
+      if (persistedIds.length > 0) await deletePersistedEpisodes(persistedIds);
+      setEpisodes(prev => prev.filter(e => !selectedIds.has(e.id)));
+      setSelectedIds(new Set());
+      toast({ title: `${toDel.length} episódio(s) removidos` });
+    } catch (err: any) {
+      toast({ title: 'Erro', description: err.message, variant: 'destructive' });
+    } finally { setBulkDeleting(false); }
+  };
+
+  const deleteSeason = async (seasonNum: number) => {
+    const seasonEps = episodes.filter(e => e.season_number === seasonNum);
+    if (seasonEps.length === 0) return;
+    if (!confirm(`Excluir TODOS os ${seasonEps.length} episódios da Temporada ${seasonNum}?`)) return;
+    setBulkDeleting(true);
+    try {
+      const persistedIds = seasonEps.filter(e => !e.isNew && !String(e.id).startsWith('new-')).map(e => e.id);
+      if (persistedIds.length > 0) await deletePersistedEpisodes(persistedIds);
+      const ids = new Set(seasonEps.map(e => e.id));
+      setEpisodes(prev => prev.filter(e => !ids.has(e.id)));
+      setSelectedIds(prev => { const n = new Set(prev); ids.forEach(i => n.delete(i)); return n; });
+      toast({ title: `Temporada ${seasonNum} removida`, description: `${seasonEps.length} episódio(s) excluídos.` });
+    } catch (err: any) {
+      toast({ title: 'Erro', description: err.message, variant: 'destructive' });
+    } finally { setBulkDeleting(false); }
+  };
+
   const handleSave = async () => {
     if (!series || !id) return;
     setSaving(true);
