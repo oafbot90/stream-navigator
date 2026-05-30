@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, Save, Plus, Trash2, Loader2, Tv, Info } from 'lucide-react';
+import { ChevronLeft, Save, Plus, Trash2, Loader2, Tv, Info, CheckSquare } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { motion } from 'framer-motion';
 import { tmdbApi } from '@/services/tmdbApi';
 
@@ -41,6 +42,29 @@ const AdminEditSeries: React.FC = () => {
   const [tmdbSeasons, setTmdbSeasons] = useState<Record<number, any[]>>({});
   const [totalSeasons, setTotalSeasons] = useState<number>(0);
   const [addingEp, setAddingEp] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+
+  const toggleSelect = (epId: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(epId)) next.delete(epId); else next.add(epId);
+      return next;
+    });
+  };
+  const toggleSelectSeason = (seasonNum: number) => {
+    const seasonEps = episodes.filter(e => e.season_number === seasonNum);
+    const allSelected = seasonEps.every(e => selectedIds.has(e.id));
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      seasonEps.forEach(e => allSelected ? next.delete(e.id) : next.add(e.id));
+      return next;
+    });
+  };
+  const toggleSelectAll = () => {
+    if (selectedIds.size === episodes.length) setSelectedIds(new Set());
+    else setSelectedIds(new Set(episodes.map(e => e.id)));
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -245,6 +269,39 @@ const AdminEditSeries: React.FC = () => {
     }
   };
 
+  const bulkDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Excluir ${selectedIds.size} episódio(s) selecionado(s)?`)) return;
+    setBulkDeleting(true);
+    try {
+      const toDel = episodes.filter(e => selectedIds.has(e.id));
+      const persistedIds = toDel.filter(e => !e.isNew && !String(e.id).startsWith('new-')).map(e => e.id);
+      if (persistedIds.length > 0) await deletePersistedEpisodes(persistedIds);
+      setEpisodes(prev => prev.filter(e => !selectedIds.has(e.id)));
+      setSelectedIds(new Set());
+      toast({ title: `${toDel.length} episódio(s) removidos` });
+    } catch (err: any) {
+      toast({ title: 'Erro', description: err.message, variant: 'destructive' });
+    } finally { setBulkDeleting(false); }
+  };
+
+  const deleteSeason = async (seasonNum: number) => {
+    const seasonEps = episodes.filter(e => e.season_number === seasonNum);
+    if (seasonEps.length === 0) return;
+    if (!confirm(`Excluir TODOS os ${seasonEps.length} episódios da Temporada ${seasonNum}?`)) return;
+    setBulkDeleting(true);
+    try {
+      const persistedIds = seasonEps.filter(e => !e.isNew && !String(e.id).startsWith('new-')).map(e => e.id);
+      if (persistedIds.length > 0) await deletePersistedEpisodes(persistedIds);
+      const ids = new Set(seasonEps.map(e => e.id));
+      setEpisodes(prev => prev.filter(e => !ids.has(e.id)));
+      setSelectedIds(prev => { const n = new Set(prev); ids.forEach(i => n.delete(i)); return n; });
+      toast({ title: `Temporada ${seasonNum} removida`, description: `${seasonEps.length} episódio(s) excluídos.` });
+    } catch (err: any) {
+      toast({ title: 'Erro', description: err.message, variant: 'destructive' });
+    } finally { setBulkDeleting(false); }
+  };
+
   const handleSave = async () => {
     if (!series || !id) return;
     setSaving(true);
@@ -363,24 +420,51 @@ const AdminEditSeries: React.FC = () => {
             {/* Episodes */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
               <div className="rounded-2xl border border-border/20 bg-card/40 backdrop-blur-sm p-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                   <div className="flex items-center gap-2">
                     <Tv className="h-4 w-4 text-primary" />
                     <h2 className="font-bold text-foreground text-sm">Episódios</h2>
                     <Badge variant="secondary" className="text-[10px]">{episodes.length}</Badge>
                   </div>
-                  <Button size="sm" onClick={addEpisode} disabled={addingEp} className="gap-1 rounded-xl text-xs">{addingEp ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} Episódio</Button>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {episodes.length > 0 && (
+                      <Button size="sm" variant="outline" onClick={toggleSelectAll} className="gap-1 rounded-xl text-xs h-8">
+                        <CheckSquare size={12} /> {selectedIds.size === episodes.length ? 'Limpar' : 'Selecionar todos'}
+                      </Button>
+                    )}
+                    {selectedIds.size > 0 && (
+                      <Button size="sm" variant="destructive" onClick={bulkDeleteSelected} disabled={bulkDeleting} className="gap-1 rounded-xl text-xs h-8">
+                        {bulkDeleting ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />} Excluir ({selectedIds.size})
+                      </Button>
+                    )}
+                    <Button size="sm" onClick={addEpisode} disabled={addingEp} className="gap-1 rounded-xl text-xs h-8">{addingEp ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} Episódio</Button>
+                  </div>
                 </div>
                 {seasons.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">Nenhum episódio adicionado.</p>}
-                {seasons.map(seasonNum => (
+                {seasons.map(seasonNum => {
+                  const seasonEps = episodes.filter(e => e.season_number === seasonNum);
+                  const allSel = seasonEps.length > 0 && seasonEps.every(e => selectedIds.has(e.id));
+                  return (
                   <div key={seasonNum} className="mb-5">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Temporada {seasonNum}</h3>
+                    <div className="flex items-center justify-between mb-2 gap-2">
+                      <div className="flex items-center gap-2">
+                        <Checkbox checked={allSel} onCheckedChange={() => toggleSelectSeason(seasonNum)} />
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Temporada {seasonNum} <span className="text-muted-foreground/60">({seasonEps.length})</span></h3>
+                      </div>
+                      <Button size="sm" variant="ghost" onClick={() => deleteSeason(seasonNum)} disabled={bulkDeleting} className="h-7 text-[10px] text-destructive hover:bg-destructive/10 rounded-lg gap-1">
+                        <Trash2 size={11} /> Excluir temporada
+                      </Button>
+                    </div>
                     <div className="space-y-1.5">
-                      {episodes.filter(e => e.season_number === seasonNum).map((ep) => {
+                      {seasonEps.map((ep) => {
                         const idx = episodes.indexOf(ep);
+                        const checked = selectedIds.has(ep.id);
                         return (
-                          <div key={ep.id} className="grid grid-cols-12 gap-1.5 items-center rounded-xl bg-background/30 border border-border/10 p-2">
-                            <div className="col-span-1"><Input type="number" value={ep.season_number} onChange={e => updateEpisode(idx, 'season_number', parseInt(e.target.value) || 1)} className="h-7 text-[10px] rounded-lg bg-background/50 border-border/20 px-1.5" /></div>
+                          <div key={ep.id} className={`grid grid-cols-12 gap-1.5 items-center rounded-xl border p-2 ${checked ? 'bg-destructive/5 border-destructive/30' : 'bg-background/30 border-border/10'}`}>
+                            <div className="col-span-1 flex items-center gap-1">
+                              <Checkbox checked={checked} onCheckedChange={() => toggleSelect(ep.id)} />
+                              <Input type="number" value={ep.season_number} onChange={e => updateEpisode(idx, 'season_number', parseInt(e.target.value) || 1)} className="h-7 text-[10px] rounded-lg bg-background/50 border-border/20 px-1.5" />
+                            </div>
                             <div className="col-span-1"><Input type="number" value={ep.episode_number} onChange={e => updateEpisode(idx, 'episode_number', parseInt(e.target.value) || 1)} className="h-7 text-[10px] rounded-lg bg-background/50 border-border/20 px-1.5" /></div>
                             <div className="col-span-2"><Input value={ep.title} onChange={e => updateEpisode(idx, 'title', e.target.value)} className="h-7 text-[10px] rounded-lg bg-background/50 border-border/20 px-1.5" /></div>
                             <div className="col-span-3"><Input value={ep.streamUrl} onChange={e => updateEpisode(idx, 'streamUrl', e.target.value)} placeholder="URL stream" className="h-7 text-[10px] rounded-lg bg-background/50 border-border/20 px-1.5" /></div>
@@ -392,7 +476,7 @@ const AdminEditSeries: React.FC = () => {
                       })}
                     </div>
                   </div>
-                ))}
+                );})}
               </div>
             </motion.div>
 
