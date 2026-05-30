@@ -476,7 +476,7 @@ const AdminEditSeries: React.FC = () => {
                       })}
                     </div>
                   </div>
-                ))}
+                );})}
               </div>
             </motion.div>
 
