@@ -42,6 +42,29 @@ const AdminEditSeries: React.FC = () => {
   const [tmdbSeasons, setTmdbSeasons] = useState<Record<number, any[]>>({});
   const [totalSeasons, setTotalSeasons] = useState<number>(0);
   const [addingEp, setAddingEp] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+
+  const toggleSelect = (epId: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(epId)) next.delete(epId); else next.add(epId);
+      return next;
+    });
+  };
+  const toggleSelectSeason = (seasonNum: number) => {
+    const seasonEps = episodes.filter(e => e.season_number === seasonNum);
+    const allSelected = seasonEps.every(e => selectedIds.has(e.id));
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      seasonEps.forEach(e => allSelected ? next.delete(e.id) : next.add(e.id));
+      return next;
+    });
+  };
+  const toggleSelectAll = () => {
+    if (selectedIds.size === episodes.length) setSelectedIds(new Set());
+    else setSelectedIds(new Set(episodes.map(e => e.id)));
+  };
 
   useEffect(() => {
     if (!id) return;
