@@ -53,29 +53,27 @@ const AdminDashboard: React.FC = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      const [profilesRes, subsRes, moviesRes, seriesRes, animeMoviesRes, animeSeriesRes, paymentsRes, usersCountRes] = await Promise.all([
-        supabase.from('user_profiles').select('*'),
+      const [subsRes, moviesRes, seriesRes, animeMoviesRes, animeSeriesRes, paymentsRes, usersRes] = await Promise.all([
         supabase.from('subscriptions').select('user_id, plano, status'),
         supabase.from('movies_catalog').select('id', { count: 'exact', head: true }),
         supabase.from('series_catalog').select('id', { count: 'exact', head: true }),
         supabase.from('movies_catalog').select('id', { count: 'exact', head: true }).contains('genres', ['Animação']),
         supabase.from('series_catalog').select('id', { count: 'exact', head: true }).contains('genres', ['Animação']),
         supabase.from('payments_logs').select('valor, status_pagamento').eq('status_pagamento', 'aprovado'),
-        supabase.functions.invoke('admin-dashboard', { body: { action: 'users_count' } }),
+        supabase.functions.invoke('admin-dashboard', { body: { action: 'users' } }),
       ]);
-      if (profilesRes.error) throw profilesRes.error;
       if (subsRes.error) throw subsRes.error;
-      const profiles = profilesRes.data || [];
       const subscriptions = (subsRes.data || []) as any[];
       const payments = (paymentsRes.data || []) as any[];
-      const countData = (usersCountRes.data || { count: 0 }) as any;
+      const usersData = (usersRes.data || { users: [], total: 0 }) as any;
+      const allUsers: any[] = usersData.users || [];
       return {
-        totalUsers: Number(countData.count || 0),
+        totalUsers: Number(usersData.total || allUsers.length || 0),
         totalMovies: moviesRes.count || 0,
         totalSeries: seriesRes.count || 0,
         totalAnimes: (animeMoviesRes.count || 0) + (animeSeriesRes.count || 0),
         totalRevenue: payments.reduce((acc, p) => acc + Number(p.valor || 0), 0),
-        recentUsers: profiles.slice(-10),
+        recentUsers: allUsers.slice(-10),
         activeSubscriptions: subscriptions.filter((sub) => sub.status === 'ativo').length,
       };
     },
