@@ -3,8 +3,8 @@ import { MessageCircle, X, Mail, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
-const WHATSAPP_URL = 'https://wa.me/5511999999999?text=Ol%C3%A1%2C%20preciso%20de%20suporte%20na%20FlixHub';
-const TELEGRAM_URL = 'https://t.me/flixhub_suporte';
+const WHATSAPP_URL = 'https://chat.whatsapp.com/JVE5yDqD2nu5JfrjJgKeEt?s=cl&p=i&ilr=4';
+const TELEGRAM_URL = 'https://t.me/fliixxhub';
 
 const FloatingSupportButton: React.FC = () => {
   const [open, setOpen] = useState(false);
