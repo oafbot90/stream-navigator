@@ -792,6 +792,7 @@ export type Database = {
           content_type: string | null
           created_at: string | null
           genres: string[] | null
+          has_stream: boolean
           id: string
           imdb_id: string | null
           original_language: string | null
@@ -813,6 +814,7 @@ export type Database = {
           content_type?: string | null
           created_at?: string | null
           genres?: string[] | null
+          has_stream?: boolean
           id?: string
           imdb_id?: string | null
           original_language?: string | null
@@ -834,6 +836,7 @@ export type Database = {
           content_type?: string | null
           created_at?: string | null
           genres?: string[] | null
+          has_stream?: boolean
           id?: string
           imdb_id?: string | null
           original_language?: string | null
@@ -1239,6 +1242,7 @@ export type Database = {
           content_type: string | null
           created_at: string | null
           genres: string[] | null
+          has_stream: boolean
           id: string
           imdb_id: string | null
           original_language: string | null
