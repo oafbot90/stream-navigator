@@ -1,6 +1,6 @@
 import React, { useDeferredValue, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Ban, ChevronLeft, ChevronRight, Loader2, Search } from 'lucide-react';
+import { ArrowLeft, Ban, ChevronLeft, ChevronRight, Loader2, Search, Film, Tv, LayoutGrid } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,9 +9,12 @@ import { useStreamStatus, useStreamStatusCounts } from '@/hooks/useStreamStatus'
 
 const PAGE_SIZE = 50;
 
+type TypeFilter = 'all' | 'movie' | 'series';
+
 const AdminStreamStatus: React.FC = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const deferredSearch = useDeferredValue(search);
 
   const { data, isLoading } = useStreamStatus('no-links');
@@ -20,10 +23,20 @@ const AdminStreamStatus: React.FC = () => {
   const filtered = useMemo(() => {
     const rows = data || [];
     const q = deferredSearch.trim().toLowerCase();
-    return q ? rows.filter(r => r.title?.toLowerCase().includes(q)) : rows;
-  }, [data, deferredSearch]);
+    const byType = typeFilter === 'all' ? rows : rows.filter(r => r.type === typeFilter);
+    return q ? byType.filter(r => r.title?.toLowerCase().includes(q)) : byType;
+  }, [data, deferredSearch, typeFilter]);
 
-  React.useEffect(() => { setPage(1); }, [deferredSearch]);
+  React.useEffect(() => { setPage(1); }, [deferredSearch, typeFilter]);
+
+  const typeCounts = useMemo(() => {
+    const rows = data || [];
+    return {
+      all: rows.length,
+      movie: rows.filter(r => r.type === 'movie').length,
+      series: rows.filter(r => r.type === 'series').length,
+    };
+  }, [data]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -49,7 +62,30 @@ const AdminStreamStatus: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                size="sm" variant={typeFilter === 'all' ? 'default' : 'outline'}
+                className="rounded-xl gap-1.5"
+                onClick={() => setTypeFilter('all')}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" /> Todos <span className="opacity-70">({typeCounts.all})</span>
+              </Button>
+              <Button
+                size="sm" variant={typeFilter === 'movie' ? 'default' : 'outline'}
+                className="rounded-xl gap-1.5"
+                onClick={() => setTypeFilter('movie')}
+              >
+                <Film className="h-3.5 w-3.5" /> Filmes <span className="opacity-70">({typeCounts.movie})</span>
+              </Button>
+              <Button
+                size="sm" variant={typeFilter === 'series' ? 'default' : 'outline'}
+                className="rounded-xl gap-1.5"
+                onClick={() => setTypeFilter('series')}
+              >
+                <Tv className="h-3.5 w-3.5" /> Séries <span className="opacity-70">({typeCounts.series})</span>
+              </Button>
+            </div>
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
