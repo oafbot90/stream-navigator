@@ -1,6 +1,6 @@
 import React, { useDeferredValue, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Ban, ChevronLeft, ChevronRight, Loader2, Search } from 'lucide-react';
+import { ArrowLeft, Ban, ChevronLeft, ChevronRight, Loader2, Search, Film, Tv, LayoutGrid } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,9 +9,12 @@ import { useStreamStatus, useStreamStatusCounts } from '@/hooks/useStreamStatus'
 
 const PAGE_SIZE = 50;
 
+type TypeFilter = 'all' | 'movie' | 'series';
+
 const AdminStreamStatus: React.FC = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const deferredSearch = useDeferredValue(search);
 
   const { data, isLoading } = useStreamStatus('no-links');
