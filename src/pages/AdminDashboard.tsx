@@ -334,6 +334,46 @@ const AdminDashboard: React.FC = () => {
                         ))}
                       </div>
                     </div>
+
+                    {/* Usuários Cadastrados Recentes */}
+                    <div>
+                      <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                        <Users className="h-4 w-4 text-primary" />
+                        Usuários Cadastrados Recentes
+                        <Badge variant="secondary" className="text-[10px] ml-auto">{stats?.recentUsers?.length || 0}</Badge>
+                      </h3>
+                      <div className="rounded-2xl border border-border/40 bg-card/40 backdrop-blur-xl divide-y divide-border/40 overflow-hidden">
+                        {!stats?.recentUsers?.length ? (
+                          <p className="text-sm text-muted-foreground text-center py-6">Nenhum usuário encontrado</p>
+                        ) : (
+                          stats.recentUsers.map((u: any) => (
+                            <div key={u.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shrink-0">
+                                  <Users className="h-4 w-4 text-primary" />
+                                </div>
+                                <span className="text-sm text-foreground truncate">{u.email}</span>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <Badge variant="outline" className="text-[10px] uppercase">
+                                  {u.plano || 'free'}
+                                </Badge>
+                                <Badge
+                                  className={cn(
+                                    "text-[10px] uppercase border-0",
+                                    u.status === 'ativo' ? "bg-emerald-500/15 text-emerald-400" :
+                                    u.status === 'pendente' ? "bg-amber-500/15 text-amber-400" :
+                                    "bg-muted text-muted-foreground"
+                                  )}
+                                >
+                                  {u.status || 'ativo'}
+                                </Badge>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <motion.div
