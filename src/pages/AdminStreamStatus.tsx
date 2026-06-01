@@ -23,10 +23,20 @@ const AdminStreamStatus: React.FC = () => {
   const filtered = useMemo(() => {
     const rows = data || [];
     const q = deferredSearch.trim().toLowerCase();
-    return q ? rows.filter(r => r.title?.toLowerCase().includes(q)) : rows;
-  }, [data, deferredSearch]);
+    const byType = typeFilter === 'all' ? rows : rows.filter(r => r.type === typeFilter);
+    return q ? byType.filter(r => r.title?.toLowerCase().includes(q)) : byType;
+  }, [data, deferredSearch, typeFilter]);
 
-  React.useEffect(() => { setPage(1); }, [deferredSearch]);
+  React.useEffect(() => { setPage(1); }, [deferredSearch, typeFilter]);
+
+  const counts = useMemo(() => {
+    const rows = data || [];
+    return {
+      all: rows.length,
+      movie: rows.filter(r => r.type === 'movie').length,
+      series: rows.filter(r => r.type === 'series').length,
+    };
+  }, [data]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
