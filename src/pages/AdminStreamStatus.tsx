@@ -62,7 +62,30 @@ const AdminStreamStatus: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                size="sm" variant={typeFilter === 'all' ? 'default' : 'outline'}
+                className="rounded-xl gap-1.5"
+                onClick={() => setTypeFilter('all')}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" /> Todos <span className="opacity-70">({typeCounts.all})</span>
+              </Button>
+              <Button
+                size="sm" variant={typeFilter === 'movie' ? 'default' : 'outline'}
+                className="rounded-xl gap-1.5"
+                onClick={() => setTypeFilter('movie')}
+              >
+                <Film className="h-3.5 w-3.5" /> Filmes <span className="opacity-70">({typeCounts.movie})</span>
+              </Button>
+              <Button
+                size="sm" variant={typeFilter === 'series' ? 'default' : 'outline'}
+                className="rounded-xl gap-1.5"
+                onClick={() => setTypeFilter('series')}
+              >
+                <Tv className="h-3.5 w-3.5" /> Séries <span className="opacity-70">({typeCounts.series})</span>
+              </Button>
+            </div>
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
