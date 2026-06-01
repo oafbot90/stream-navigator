@@ -29,7 +29,7 @@ const AdminStreamStatus: React.FC = () => {
 
   React.useEffect(() => { setPage(1); }, [deferredSearch, typeFilter]);
 
-  const counts = useMemo(() => {
+  const typeCounts = useMemo(() => {
     const rows = data || [];
     return {
       all: rows.length,
